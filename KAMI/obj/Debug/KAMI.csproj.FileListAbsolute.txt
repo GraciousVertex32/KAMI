@@ -1,0 +1,10 @@
+C:\Users\19776\source\repos\KAMI\KAMI\bin\Debug\KAMI.exe.config
+C:\Users\19776\source\repos\KAMI\KAMI\bin\Debug\KAMI.exe
+C:\Users\19776\source\repos\KAMI\KAMI\bin\Debug\KAMI.pdb
+C:\Users\19776\source\repos\KAMI\KAMI\obj\Debug\KAMI.csprojResolveAssemblyReference.cache
+C:\Users\19776\source\repos\KAMI\KAMI\obj\Debug\KAMI.Form1.resources
+C:\Users\19776\source\repos\KAMI\KAMI\obj\Debug\KAMI.Properties.Resources.resources
+C:\Users\19776\source\repos\KAMI\KAMI\obj\Debug\KAMI.csproj.GenerateResource.Cache
+C:\Users\19776\source\repos\KAMI\KAMI\obj\Debug\KAMI.csproj.CoreCompileInputs.cache
+C:\Users\19776\source\repos\KAMI\KAMI\obj\Debug\KAMI.exe
+C:\Users\19776\source\repos\KAMI\KAMI\obj\Debug\KAMI.pdb
