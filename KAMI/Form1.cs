@@ -11,21 +11,15 @@ using System.IO;
 
 namespace KAMI
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form//for 
     {
-        Bitmap img;//loaded image
-        Bitmap convert;//converted image
-        Grid[,] imggrid = new Grid[16, 10];
-        Color[,] Color=new Color[16,10];//unclassifed color map for loaded image
+        public static Bitmap img;
+        public static int imgwidth;
+        public static int imgheight;
         public Form1()
         {
             InitializeComponent();
         }
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void button1_Click(object sender, EventArgs e)//load image
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -37,10 +31,30 @@ namespace KAMI
                 pictureBox1.Image = img;
             }
         }
-        private void button1_Click_1(object sender, EventArgs e)//image working
+        private void button1_Click_1(object sender, EventArgs e)//access imageprocess class and output result
         {
-            int Width = int.Parse(textBox1.Text);//16
-            int Height = int.Parse(textBox2.Text);//10
+            imgwidth = int.Parse(textBox1.Text);
+            imgheight = int.Parse(textBox2.Text);
+            ImageProcess imageProcess = new ImageProcess();
+            imageProcess.Regioning();
+            textBox3.Text = ImageProcess.debug;
+        }
+        
+    }
+    class ImageProcess
+    {
+        Bitmap img;//loaded image
+        Bitmap convert;//converted image
+        public static Color[,] Color = new Color[16, 10];//unclassifed color map for loaded image
+        public static string debug;
+        public ImageProcess()
+        {
+            img = Form1.img;
+        }
+        public void Regioning()//imageprocess
+        {
+            int Width = Form1.imgwidth;//16
+            int Height = Form1.imgheight;//10
             int pixelength = img.Width / Width;
             int hpl = pixelength / 2;
             convert = new Bitmap(Width, Height);
@@ -48,15 +62,13 @@ namespace KAMI
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    Color[x,y] = GridReader(x * pixelength + hpl, y * pixelength + hpl);
-                    convert.SetPixel(x, y, Color[x,y]);
-                    textBox3.Text+= Classify(Color[x, y]);//change parameter
+                    Color[x, y] = GridReader(x * pixelength + hpl, y * pixelength + hpl);
+                    convert.SetPixel(x, y, Color[x, y]);
+                    debug += Classify(Color[x, y]);//change parameter
                 }
-                textBox3.Text += "\r\n";
-                textBox3.Text += "\r\n";
+                debug += "\r\n";
+                debug += "\r\n";
             }
-            pictureBox2.Image = convert;
-            label3.Text = Color[15, 0].GetBrightness().ToString();//test brightness
         }
         public string Classify(Color c)//classify color tybe
         {
@@ -64,22 +76,22 @@ namespace KAMI
             float lgt = c.GetBrightness();
             float sat = c.GetSaturation();
             double satthreshold = 0.35;
-            if (lgt < 0.2 ) return "黑 " ;
-            if (hue < 20 && sat > satthreshold) return "红 " ;
-            if (hue < 90 && sat > satthreshold) return "黄 " ;
-            if (hue < 150 && sat > satthreshold) return "绿 " ;
+            if (lgt < 0.2) return "黑 ";
+            if (hue < 20 && sat > satthreshold) return "红 ";
+            if (hue < 90 && sat > satthreshold) return "黄 ";
+            if (hue < 150 && sat > satthreshold) return "绿 ";
             if (hue < 210 && sat > satthreshold) return "青 ";
-            if (hue < 270 && sat > satthreshold) return "蓝 " ;
-            if (hue < 330 && sat > satthreshold) return "紫 " ;
+            if (hue < 270 && sat > satthreshold) return "蓝 ";
+            if (hue < 330 && sat > satthreshold) return "紫 ";
             if (hue < 360 && sat > satthreshold) return "红 ";
-            return "黑 " ;
+            return "黑 ";
         }
-        public string Classify(Color c,int a)//for configuration
+        public string Classify(Color c, int a)//for configuration
         {
             float hue = c.GetHue();
             float lgt = c.GetBrightness();
             float sat = c.GetSaturation();
-            double satthreshold=0.35;
+            double satthreshold = 0.35;
             if (lgt < 0.2) return "黑 " + lgt + sat;
             if (hue < 20 && sat > satthreshold) return "红 " + lgt + sat;
             if (hue < 90 && sat > satthreshold) return "黄 " + lgt + sat;
@@ -111,7 +123,15 @@ namespace KAMI
             Color gridcolor = System.Drawing.Color.FromArgb(red, green, blue);
             return gridcolor;
         }
-
+    }
+    class GameStructure
+    {
+        static Grid[,] imggrid = new Grid[16, 10];
+        Color[,] Color = new Color[16, 10];
+        public void GetColor()//get color from other class
+        {
+            Color = ImageProcess.Color;
+        }
         public void Init()//set up the grid array
         {
             for (int y = 0; y < 10; y++)
@@ -138,7 +158,7 @@ namespace KAMI
             }
             public void Connect(Grid neighbour)//connect same color neighbour
             {
-                if (neighbour.area == null && this.area == null) 
+                if (neighbour.area == null && this.area == null)
                 {
                     Area area = new Area();
                     area.list.Add(this);
@@ -161,61 +181,56 @@ namespace KAMI
                     neighbour.area = this.area;
                 }
             }
-            public void ChangeColor(Color newcolor)//change area color
+            public void CheckConnection(Grid current)//check surround grids and connect them if match color
             {
-                foreach (Grid grid in this.area.list)
+                if (current.x > 0)
                 {
-                    grid.gridcolor = newcolor;
+                    if (current.IsSameColor(imggrid[current.x - 1, current.y]))
+                    {
+                        current.Connect(imggrid[current.x - 1, current.y]);
+                    }
                 }
-            }
-        }
-        public void CheckConnection(Grid current)//check surround grids and connect them if match color
-        {
-            if (current.x > 0)
-            {
-                if (current.IsSameColor(imggrid[current.x - 1, current.y]))
+                if (current.x < 16)
                 {
-                    current.Connect(imggrid[current.x - 1, current.y]);
+                    if (current.IsSameColor(imggrid[current.x + 1, current.y]))
+                    {
+                        current.Connect(imggrid[current.x + 1, current.y]);
+                    }
                 }
-            }
-            if (current.x < 16)
-            {
-                if (current.IsSameColor(imggrid[current.x + 1, current.y]))
+                if (current.y > 0)
                 {
-                    current.Connect(imggrid[current.x + 1, current.y]);
+                    if (current.IsSameColor(imggrid[current.x, current.y - 1]))
+                    {
+                        current.Connect(imggrid[current.x, current.y - 1]);
+                    }
                 }
-            }
-            if (current.y > 0)
-            {
-                if (current.IsSameColor(imggrid[current.x, current.y - 1]))
+                if (current.y < 16)
                 {
-                    current.Connect(imggrid[current.x, current.y - 1]);
-                }
-            }
-            if (current.y < 16)
-            {
-                if (current.IsSameColor(imggrid[current.x, current.y + 1]))
-                {
-                    current.Connect(imggrid[current.x, current.y + 1]);
+                    if (current.IsSameColor(imggrid[current.x, current.y + 1]))
+                    {
+                        current.Connect(imggrid[current.x, current.y + 1]);
+                    }
                 }
             }
         }
         public class Area
         {
-            public List<Grid> list;
+            public List<Grid> list;//all the grids in the area is stored here
             public void AreaConnection()//do this after color change to merge areas
             {
-                Form1 a = new Form1();
-                for (int i = 0; i < list.Count; i++)
+                Grid grid1 = new Grid();
+                foreach (Grid grid in this.list)
                 {
-                    a.CheckConnection(list[i]);
+                    grid1.CheckConnection(grid);
                 }
             }
-        }
-
-        private void pictureBox2_Click(object sender, EventArgs e)
-        {
-
+            public void ChangeColor(Color newcolor)//change area color
+            {
+                foreach (Grid grid in this.list)
+                {
+                    grid.gridcolor = newcolor;
+                }
+            }
         }
     }
 }
