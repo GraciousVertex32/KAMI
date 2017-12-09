@@ -11,7 +11,7 @@ using System.IO;
 
 namespace KAMI
 {
-    public partial class Form1 : Form//for 
+    public partial class Form1 : Form
     {
         public static Bitmap img;
         public static int imgwidth;
@@ -128,41 +128,43 @@ namespace KAMI
     {
         static Grid[,] imggrid = new Grid[16, 10];
         Color[,] Color = new Color[16, 10];
-        public void GetColor()//get color from other class
+        public GameStructure()//get color from other class
         {
             Color = ImageProcess.Color;
-        }
-        public void Init()//set up the grid array
-        {
             for (int y = 0; y < 10; y++)
             {
                 for (int x = 0; x < 16; x++)
                 {
-                    Grid grid = new Grid();
-                    grid.x = x;
-                    grid.y = y;
-                    grid.gridcolor = Color[x, y];
-                    imggrid[x, y] = grid;
+                    Grid grid = new Grid(x, y, Color[x, y]);
                 }
             }
         }
         public class Grid//single color grid
         {
-            public Color gridcolor;
             public Area area;
-            public int x;
-            public int y;
-            public Boolean IsSameColor(Grid neighbour)//check if neighbour grid is same color
+            public Color gridcolor;
+            int x;
+            int y;
+            public Grid(int x1,int y1,Color c)
+            {
+                x = x1;
+                y = y1;
+                gridcolor = c;
+                imggrid[x, y] = this;
+            }
+            Boolean IsSameColor(Grid neighbour)//check if neighbour grid is same color
             {
                 return gridcolor.Equals(neighbour);
             }
-            public void Connect(Grid neighbour)//connect same color neighbour
+            void Connect(Grid neighbour)//connect same color neighbour
             {
                 if (neighbour.area == null && this.area == null)
                 {
                     Area area = new Area();
                     area.list.Add(this);
                     area.list.Add(neighbour);
+                    this.area = area;
+                    neighbour.area = area;
                 }
                 if (this.area == null && neighbour.area != null)
                 {
@@ -181,7 +183,7 @@ namespace KAMI
                     neighbour.area = this.area;
                 }
             }
-            public void CheckConnection(Grid current)//check surround grids and connect them if match color
+            public static void CheckConnection(Grid current)//check surround grids and connect them if match color
             {
                 if (current.x > 0)
                 {
@@ -218,10 +220,9 @@ namespace KAMI
             public List<Grid> list;//all the grids in the area is stored here
             public void AreaConnection()//do this after color change to merge areas
             {
-                Grid grid1 = new Grid();
                 foreach (Grid grid in this.list)
                 {
-                    grid1.CheckConnection(grid);
+                    Grid.CheckConnection(grid);
                 }
             }
             public void ChangeColor(Color newcolor)//change area color
