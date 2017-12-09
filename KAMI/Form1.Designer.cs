@@ -53,7 +53,7 @@
             // 
             // LoadImage
             // 
-            this.LoadImage.Location = new System.Drawing.Point(714, 112);
+            this.LoadImage.Location = new System.Drawing.Point(671, 109);
             this.LoadImage.Name = "LoadImage";
             this.LoadImage.Size = new System.Drawing.Size(97, 39);
             this.LoadImage.TabIndex = 1;
@@ -63,7 +63,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(714, 49);
+            this.button1.Location = new System.Drawing.Point(671, 46);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(97, 39);
             this.button1.TabIndex = 2;
@@ -73,7 +73,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(586, 61);
+            this.textBox1.Location = new System.Drawing.Point(543, 58);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(77, 25);
             this.textBox1.TabIndex = 3;
@@ -81,7 +81,7 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(586, 109);
+            this.textBox2.Location = new System.Drawing.Point(543, 106);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(77, 25);
             this.textBox2.TabIndex = 4;
@@ -90,7 +90,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(510, 64);
+            this.label1.Location = new System.Drawing.Point(467, 61);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 15);
             this.label1.TabIndex = 5;
@@ -99,7 +99,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(510, 112);
+            this.label2.Location = new System.Drawing.Point(467, 109);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(55, 15);
             this.label2.TabIndex = 6;
@@ -107,19 +107,20 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(1006, 23);
+            this.pictureBox2.Location = new System.Drawing.Point(1034, 12);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(267, 146);
+            this.pictureBox2.Size = new System.Drawing.Size(267, 157);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 7;
             this.pictureBox2.TabStop = false;
+            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(12, 182);
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(1289, 568);
+            this.textBox3.Size = new System.Drawing.Size(267, 235);
             this.textBox3.TabIndex = 8;
             // 
             // label3
@@ -130,6 +131,17 @@
             this.label3.Size = new System.Drawing.Size(55, 15);
             this.label3.TabIndex = 9;
             this.label3.Text = "label3";
+            //
+            //labelarray
+            //
+            //for (int y = 0; y < 10; y++)
+            //{
+            //    for (int x = 0; x < 16; x++)
+            //    {
+            //        this.labelarray[x, y].Location = new System.Drawing.Point(450 + 20 * x, 200 + 20 * y);
+            //        this.labelarray[x, y].Size = new System.Drawing.Size(40, 40);
+            //    }
+            //}
             // 
             // Form1
             // 
@@ -146,6 +158,13 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.LoadImage);
             this.Controls.Add(this.pictureBox1);
+            //for (int y = 0; y < 10; y++)
+            //{
+            //    for (int x = 0; x < 16; x++)
+            //    {
+            //        this.Controls.Add(this.labelarray[x, y]);
+            //    }
+            //}
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -168,6 +187,7 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label3;
+        //private System.Windows.Forms.Label[,] labelarray;
     }
 }
 

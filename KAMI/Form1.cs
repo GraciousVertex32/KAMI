@@ -112,8 +112,6 @@ namespace KAMI
             return gridcolor;
         }
 
-
-
         public void Init()//set up the grid array
         {
             for (int y = 0; y < 10; y++)
@@ -214,6 +212,11 @@ namespace KAMI
                 }
             }
         }
-        
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
+
