@@ -13,7 +13,7 @@ namespace KAMI
 {
     public partial class Form1 : Form
     {
-        public static Bitmap img;
+        public Bitmap img;
         public static int imgwidth;
         public static int imgheight;
         public Form1()
@@ -35,29 +35,24 @@ namespace KAMI
         {
             imgwidth = int.Parse(textBox1.Text);
             imgheight = int.Parse(textBox2.Text);
-            ImageProcess imageProcess = new ImageProcess();
-            imageProcess.Regioning();
-            textBox3.Text = ImageProcess.debug;
+            ImageProcess imageProcess = new ImageProcess(img);
+            pictureBox2.Image = imageProcess.GetConvertedImage();
+            textBox3.Text = imageProcess.GetDebugString();
         }
-        
     }
     class ImageProcess
     {
         Bitmap img;//loaded image
         Bitmap convert;//converted image
-        public static Color[,] Color = new Color[16, 10];//unclassifed color map for loaded image
-        public static string debug;
-        public ImageProcess()
+        Color[,] Color = new Color[16, 10];//unclassifed color map for loaded image
+        string debug;
+        public ImageProcess(Bitmap inputimage)
         {
-            img = Form1.img;
-        }
-        public void Regioning()//imageprocess
-        {
+            img = inputimage;
             int Width = Form1.imgwidth;//16
             int Height = Form1.imgheight;//10
             int pixelength = img.Width / Width;
             int hpl = pixelength / 2;
-            convert = new Bitmap(Width, Height);
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -70,7 +65,19 @@ namespace KAMI
                 debug += "\r\n";
             }
         }
-        public string Classify(Color c)//classify color tybe
+        public Color[,] GetColorArray()//get color[,]
+        {
+            return Color;
+        }
+        public Bitmap GetConvertedImage()//get small bitmap
+        {
+            return convert;
+        }
+        public string GetDebugString()
+        {
+            return debug;
+        }
+        private string Classify(Color c)//classify color tybe
         {
             float hue = c.GetHue();
             float lgt = c.GetBrightness();
@@ -86,7 +93,7 @@ namespace KAMI
             if (hue < 360 && sat > satthreshold) return "红 ";
             return "黑 ";
         }
-        public string Classify(Color c, int a)//for configuration
+        private string Classify(Color c, int a)//for configuration
         {
             float hue = c.GetHue();
             float lgt = c.GetBrightness();
@@ -102,7 +109,7 @@ namespace KAMI
             if (hue < 360 && sat > satthreshold) return "红 " + lgt + sat;
             return "黑 " + lgt + sat;
         }
-        public Color GridReader(int x, int y)//get average color for a grid
+        private Color GridReader(int x, int y)//get average color for a grid
         {
             int red = 0;
             int green = 0;
@@ -126,16 +133,17 @@ namespace KAMI
     }
     class GameStructure
     {
-        static Grid[,] imggrid = new Grid[16, 10];
-        Color[,] Color = new Color[16, 10];
-        public GameStructure()//get color from other class
+        Color[,] Color = new Color[16, 10];//from color input
+        Grid[,] imggrid = new Grid[16, 10];//to grid result
+        public GameStructure(Color[,] InputColor)//get color from other class
         {
-            Color = ImageProcess.Color;
+            Color = InputColor;
             for (int y = 0; y < 10; y++)
             {
                 for (int x = 0; x < 16; x++)
                 {
                     Grid grid = new Grid(x, y, Color[x, y]);
+                    imggrid[x, y] = grid;
                 }
             }
         }
@@ -150,13 +158,12 @@ namespace KAMI
                 x = x1;
                 y = y1;
                 gridcolor = c;
-                imggrid[x, y] = this;
             }
-            Boolean IsSameColor(Grid neighbour)//check if neighbour grid is same color
+            private Boolean IsSameColor(Grid neighbour)//check if neighbour grid is same color
             {
                 return gridcolor.Equals(neighbour);
             }
-            void Connect(Grid neighbour)//connect same color neighbour
+            private void Connect(Grid neighbour)//connect same color neighbour
             {
                 if (neighbour.area == null && this.area == null)
                 {
