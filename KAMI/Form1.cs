@@ -8,7 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-
+//Program for solving game KAMI
+//step 1:rebuild gamestructure and logic(gamestructure class)
+//step 2:image process ability(imageprocess class)
+//step 3:get an image of a level(form1)
+//step 4:process image into new gamestucture
+//step 5:find/write an algorithm for game
 namespace KAMI
 {
     public partial class Form1 : Form
@@ -131,11 +136,12 @@ namespace KAMI
             return gridcolor;
         }
     }
-    class GameStructure
+    public class GameStructure//fuck my life,too hard for me
     {
         Color[,] Color = new Color[16, 10];//from color input
-        Grid[,] imggrid = new Grid[16, 10];//to grid result
-        public GameStructure(Color[,] InputColor)//get color from other class
+        public Grid[,] imggrid = new Grid[16, 10];//to grid result
+        public List<Area> arealist;
+        public GameStructure(Color[,] InputColor)//set up the grid array imggrid[,]
         {
             Color = InputColor;
             for (int y = 0; y < 10; y++)
@@ -147,97 +153,99 @@ namespace KAMI
                 }
             }
         }
-        public class Grid//single color grid
+        public void ConnectArea(Area changedarea)//do this to merage areas after area color change
         {
-            public Area area;
-            public Color gridcolor;
-            int x;
-            int y;
-            public Grid(int x1,int y1,Color c)
+            foreach(Grid grid in changedarea.list)
             {
-                x = x1;
-                y = y1;
-                gridcolor = c;
+                MakeConnection(grid);
             }
-            private Boolean IsSameColor(Grid neighbour)//check if neighbour grid is same color
+        }
+        private void Connect(Grid me, Grid neighbour)//connect same color neighbour
+        {
+            if (neighbour.area == null && me.area == null)
             {
-                return gridcolor.Equals(neighbour);
+                Area area = new Area();
+                area.list.Add(me);
+                area.list.Add(neighbour);
+                me.area = area;
+                neighbour.area = area;
+                arealist.Add(area);
             }
-            private void Connect(Grid neighbour)//connect same color neighbour
+            if (me.area == null && neighbour.area != null)
             {
-                if (neighbour.area == null && this.area == null)
+                me.area = neighbour.area;
+                neighbour.area.list.Add(me);
+            }
+            if (me.area != null && neighbour.area == null)
+            {
+                neighbour.area = me.area;
+                me.area.list.Add(neighbour);
+            }
+            if (me.area != null && neighbour.area != null && !(me.area.list.SequenceEqual(neighbour.area.list)))//connect after color change
+            {
+                me.area.list.AddRange(neighbour.area.list);
+                neighbour.area.list = me.area.list;
+                neighbour.area = me.area;
+                arealist.Remove(neighbour.area);//questionable----------------------------
+            }
+        }
+        private void MakeConnection(Grid current)//check surround grids and connect them if match color
+        {
+            if (current.x > 0)
+            {
+                if (current.IsSameColor(imggrid[current.x - 1, current.y]))
                 {
-                    Area area = new Area();
-                    area.list.Add(this);
-                    area.list.Add(neighbour);
-                    this.area = area;
-                    neighbour.area = area;
-                }
-                if (this.area == null && neighbour.area != null)
-                {
-                    this.area = neighbour.area;
-                    neighbour.area.list.Add(this);
-                }
-                if (this.area != null && neighbour.area == null)
-                {
-                    neighbour.area = this.area;
-                    this.area.list.Add(neighbour);
-                }
-                if (this.area != null && neighbour.area != null && !(this.area.list.SequenceEqual(neighbour.area.list)))//connect after color change
-                {
-                    this.area.list.AddRange(neighbour.area.list);
-                    neighbour.area.list = this.area.list;
-                    neighbour.area = this.area;
+                    Connect(imggrid[current.x, current.y], imggrid[current.x - 1, current.y]);
                 }
             }
-            public static void CheckConnection(Grid current)//check surround grids and connect them if match color
+            if (current.x < 16)
             {
-                if (current.x > 0)
+                if (current.IsSameColor(imggrid[current.x + 1, current.y]))
                 {
-                    if (current.IsSameColor(imggrid[current.x - 1, current.y]))
-                    {
-                        current.Connect(imggrid[current.x - 1, current.y]);
-                    }
+                    Connect(imggrid[current.x, current.y], imggrid[current.x + 1, current.y]);
                 }
-                if (current.x < 16)
+            }
+            if (current.y > 0)
+            {
+                if (current.IsSameColor(imggrid[current.x, current.y - 1]))
                 {
-                    if (current.IsSameColor(imggrid[current.x + 1, current.y]))
-                    {
-                        current.Connect(imggrid[current.x + 1, current.y]);
-                    }
+                    Connect(imggrid[current.x, current.y], imggrid[current.x, current.y - 1]);
                 }
-                if (current.y > 0)
+            }
+            if (current.y < 16)
+            {
+                if (current.IsSameColor(imggrid[current.x, current.y + 1]))
                 {
-                    if (current.IsSameColor(imggrid[current.x, current.y - 1]))
-                    {
-                        current.Connect(imggrid[current.x, current.y - 1]);
-                    }
-                }
-                if (current.y < 16)
-                {
-                    if (current.IsSameColor(imggrid[current.x, current.y + 1]))
-                    {
-                        current.Connect(imggrid[current.x, current.y + 1]);
-                    }
+                    Connect(imggrid[current.x, current.y], imggrid[current.x, current.y + 1]);
                 }
             }
         }
-        public class Area
+    }
+    public class Grid//single color grid
+    {
+        public Area area;
+        public Color gridcolor;
+        public int x;
+        public int y;
+        public Grid(int x1, int y1, Color c)
         {
-            public List<Grid> list;//all the grids in the area is stored here
-            public void AreaConnection()//do this after color change to merge areas
+            x = x1;
+            y = y1;
+            gridcolor = c;
+        }
+        public Boolean IsSameColor(Grid neighbour)//check color with another grid
+        {
+            return gridcolor.Equals(neighbour);
+        }
+    }
+    public class Area
+    {
+        public List<Grid> list;//all the grids in the area
+        public void ChangeColor(Color newcolor)//change area color
+        {
+            foreach (Grid grid in this.list)
             {
-                foreach (Grid grid in this.list)
-                {
-                    Grid.CheckConnection(grid);
-                }
-            }
-            public void ChangeColor(Color newcolor)//change area color
-            {
-                foreach (Grid grid in this.list)
-                {
-                    grid.gridcolor = newcolor;
-                }
+                grid.gridcolor = newcolor;
             }
         }
     }
