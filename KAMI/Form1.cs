@@ -136,31 +136,30 @@ namespace KAMI
             return gridcolor;
         }
     }
-    public class GameStructure//fuck my life,too hard for me
+    class GameStructure//fuck my life,too hard for me
     {
-        Color[,] Color = new Color[16, 10];//from color input
-        public Grid[,] imggrid = new Grid[16, 10];//to grid result
-        public List<Area> arealist;
+        Grid[,] imggrid = new Grid[16, 10];//to grid result
+        List<Area> arealist;
         public GameStructure(Color[,] InputColor)//set up the grid array imggrid[,]
         {
-            Color = InputColor;
             for (int y = 0; y < 10; y++)
             {
                 for (int x = 0; x < 16; x++)
                 {
-                    Grid grid = new Grid(x, y, Color[x, y]);
+                    Grid grid = new Grid(x, y, InputColor[x, y]);
                     imggrid[x, y] = grid;
                 }
             }
         }
-        public void ConnectArea(Area changedarea)//do this to merage areas after area color change
+        public void ChangeArea(Area changedarea,Color newcolor)//change color and merage areas,available for gamelogic class(not implemented yet)
         {
+            changedarea.ChangeColor(newcolor);
             foreach(Grid grid in changedarea.list)
             {
                 MakeConnection(grid);
             }
         }
-        private void Connect(Grid me, Grid neighbour)//connect same color neighbour
+        private void Connect(Grid me, Grid neighbour)//connect same color neighbours
         {
             if (neighbour.area == null && me.area == null)
             {
@@ -184,7 +183,6 @@ namespace KAMI
             if (me.area != null && neighbour.area != null && !(me.area.list.SequenceEqual(neighbour.area.list)))//connect after color change
             {
                 me.area.list.AddRange(neighbour.area.list);
-                neighbour.area.list = me.area.list;
                 neighbour.area = me.area;
                 arealist.Remove(neighbour.area);//questionable----------------------------
             }
@@ -221,7 +219,7 @@ namespace KAMI
             }
         }
     }
-    public class Grid//single color grid
+    class Grid//single color grid
     {
         public Area area;
         public Color gridcolor;
@@ -238,7 +236,7 @@ namespace KAMI
             return gridcolor.Equals(neighbour);
         }
     }
-    public class Area
+    class Area
     {
         public List<Grid> list;//all the grids in the area
         public void ChangeColor(Color newcolor)//change area color
