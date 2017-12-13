@@ -18,7 +18,7 @@ namespace KAMI
 {
     public partial class Form1 : Form
     {
-        public Bitmap img;
+        Bitmap img;
         public static int imgwidth;
         public static int imgheight;
         public Form1()
@@ -44,31 +44,45 @@ namespace KAMI
             pictureBox2.Image = imageProcess.GetConvertedImage();
             textBox3.Text = imageProcess.GetDebugString();
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            imgwidth = int.Parse(textBox1.Text);
+            imgheight = int.Parse(textBox2.Text);
+            ImageProcess imageProcess = new ImageProcess(img);
+            textBox4.Text += imageProcess.GetAverageHue().ToString() + "\r\n";
+        }
     }
     class ImageProcess
     {
         Bitmap img;//loaded image
-        Bitmap convert;//converted image
+        Bitmap convert = new Bitmap(16, 10);//converted image
         Color[,] Color = new Color[16, 10];//unclassifed color map for loaded image
         string debug;
+        int Width;
+        int Height;
+        int pixelength;
+        int hpl;
         public ImageProcess(Bitmap inputimage)
         {
             img = inputimage;
-            int Width = Form1.imgwidth;//16
-            int Height = Form1.imgheight;//10
-            int pixelength = img.Width / Width;
-            int hpl = pixelength / 2;
-            for (int y = 0; y < Height; y++)
+            Width = Form1.imgwidth;//16
+            Height = Form1.imgheight;//10
+            pixelength = img.Width / Width;
+            hpl = pixelength / 2;
+            if (img.Height > 200) { processing(); }
+        }
+        public float GetAverageHue()
+        {
+            int hue = 0;
+            for (int y = 0; y < img.Height; y++) 
             {
-                for (int x = 0; x < Width; x++)
+                for (int x = 0; x < img.Width; x++)
                 {
-                    Color[x, y] = GridReader(x * pixelength + hpl, y * pixelength + hpl);
-                    convert.SetPixel(x, y, Color[x, y]);
-                    debug += Classify(Color[x, y]);//change parameter
+                    hue += (int)img.GetPixel(x, y).GetHue();
                 }
-                debug += "\r\n";
-                debug += "\r\n";
             }
+            return hue / (img.Width * img.Height);
         }
         public Color[,] GetColorArray()//get color[,]
         {
@@ -81,6 +95,20 @@ namespace KAMI
         public string GetDebugString()
         {
             return debug;
+        }
+        private void processing()
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    Color[x, y] = GridReader(x * pixelength + hpl, y * pixelength + hpl);
+                    convert.SetPixel(x, y, Color[x, y]);
+                    debug += Classify(Color[x, y]);//change parameter
+                }
+                debug += "\r\n";
+                debug += "\r\n";
+            }
         }
         private string Classify(Color c)//classify color tybe
         {
@@ -246,6 +274,10 @@ namespace KAMI
                 grid.gridcolor = newcolor;
             }
         }
+    }
+    class IncludedColor
+    {
+
     }
 }
 
