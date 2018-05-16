@@ -42,7 +42,11 @@ namespace KAMI
                 }
             }
         }
-        private void Operation(Grid grid,Color newcolor)
+        private void Click(int x, int y, Color c)
+        {
+            Operation1(GetGrid(x, y), c);
+        }
+        private void Operation1(Grid grid,Color newcolor)
         {
             foreach (Grid part in AllConnectedGrid(grid))
             {

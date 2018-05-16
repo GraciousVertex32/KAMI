@@ -44,6 +44,13 @@ namespace KAMI
             pictureBox2.Image = imageProcess.GetConvertedImage();
             textBox3.Text = imageProcess.GetDebugString();
         }
+
+        private void pictureBox2_Click(object sender, MouseEventArgs e)
+        {
+            int xCoordinate = e.X;
+            int yCoordinate = e.Y;
+            label3.Text = xCoordinate.ToString() + " " + yCoordinate.ToString();
+        }
     }
 }
 
