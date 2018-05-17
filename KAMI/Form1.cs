@@ -18,10 +18,11 @@ namespace KAMI
 {
     public partial class Form1 : Form
     {
-        private Color selectedcolor;
-        Bitmap img;
+        private Color selectedcolor; // color want to change to 
+        Bitmap img; // loaded image
         public static int imgwidth;
         public static int imgheight;
+        public int chance;
         private GameStructure structure;
         private ImageProcess imageProcess;
         public Form1()
@@ -43,25 +44,31 @@ namespace KAMI
         {
             imgwidth = int.Parse(textBox1.Text);
             imgheight = int.Parse(textBox2.Text);
+            chance = int.Parse(textBox4.Text);
+            label3.Text = chance.ToString();
             imageProcess = new ImageProcess(img);
             pictureBox2.Image = imageProcess.GetConvertedImage();
             textBox3.Text = imageProcess.GetDebugString();
-            structure = new GameStructure(imageProcess.GetColorArray());
+            structure = new GameStructure(imageProcess.GetColorArray(),chance);
         }
 
-        private void pictureBox2_Click(object sender, MouseEventArgs e)
+        private void pictureBox2_Click(object sender, MouseEventArgs e) // player click this panel to play the game
         {
             int xCoordinate = e.X;
             int yCoordinate = e.Y;
             int x = xCoordinate / 50;
             int y = yCoordinate / 50;
-            label3.Text = x.ToString() + " " + y.ToString();
             structure.Click(x, y, selectedcolor);
+            label3.Text = structure.GetStep().ToString();
             imageProcess.Update(structure.Updateimage());
             pictureBox2.Image = imageProcess.GetConvertedImage();
+            if(structure.End())
+            {
+                MessageBox.Show("YOU WIN!");
+            }
         }
 
-        private void pictureBox3_Click(object sender, MouseEventArgs e)
+        private void pictureBox3_Click(object sender, MouseEventArgs e) // select color like ingame,not used
         {
             int xCoordinate = e.X;
             int yCoordinate = e.Y;
@@ -73,7 +80,7 @@ namespace KAMI
 
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) // select color to change
         {
             if(comboBox1.SelectedIndex == 0)
             {

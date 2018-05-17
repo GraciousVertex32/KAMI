@@ -9,12 +9,14 @@ namespace KAMI
 {
     class GameStructure//fuck my life,too hard for me
     {
+        private int trials;
         private static int width = 16;
         private static int height = 10;
         Grid[,] imggrid = new Grid[width, height];//to grid result
         Color[,] returncolor = new Color[16, 10];
-        public GameStructure(Color[,] InputColor)//set up the grid array imggrid[,]
+        public GameStructure(Color[,] InputColor,int chance)//set up the grid array imggrid[,]
         {
+            this.trials = chance;
             Array.Copy(InputColor, returncolor,InputColor.Length);
             for (int y = 0; y < height; y++)
             {
@@ -44,15 +46,32 @@ namespace KAMI
                 }
             }
         }
-        public void Click(int x, int y, Color c)
+        public void Click(int x, int y, Color c) // for outer class to change color
         {
             Operation1(GetGrid(x, y), c);
+            trials = trials - 1;
         }
-        public Color[,] Updateimage()
+        public Color[,] Updateimage() // new image information for visualization
         {
             return returncolor;
         }
-        private void Operation1(Grid grid,Color newcolor)
+        public int GetStep()
+        {
+            return trials;
+        }
+        public bool End()
+        {
+            Color c = imggrid[0, 0].Gridcolor;
+            foreach (Grid grid in imggrid)
+            {
+                if (c != grid.Gridcolor)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        private void Operation1(Grid grid,Color newcolor) // this change the color
         {
             foreach (Grid part in AllConnectedGrid(grid))
             {
@@ -60,7 +79,7 @@ namespace KAMI
                 returncolor[part.X, part.Y] = newcolor;
             }
         }
-        private IEnumerable<Grid> AllConnectedGrid(Grid origin)
+        private IEnumerable<Grid> AllConnectedGrid(Grid origin) // return all connected block
         {
             IList<Grid> connected = new List<Grid>();
             Queue<Grid> pq = new Queue<Grid>();
@@ -73,6 +92,7 @@ namespace KAMI
                 if (visited[pq.First<Grid>().X, pq.First<Grid>().Y] == false)
                 {
                     temp = pq.Dequeue();
+                    // try to get temp drawed one by one
                     visited[temp.X, temp.Y] = true;
                     if (temp.Left != null && temp.CompareColor(temp.Left))
                     {
@@ -102,7 +122,7 @@ namespace KAMI
             }
             return connected;
         }
-        private Grid GetGrid(int x, int y)
+        private Grid GetGrid(int x, int y) // get grid from x,y
         {
             return imggrid[x, y];
         }
