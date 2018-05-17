@@ -18,9 +18,12 @@ namespace KAMI
 {
     public partial class Form1 : Form
     {
+        private Color selectedcolor;
         Bitmap img;
         public static int imgwidth;
         public static int imgheight;
+        private GameStructure structure;
+        private ImageProcess imageProcess;
         public Form1()
         {
             InitializeComponent();
@@ -40,16 +43,42 @@ namespace KAMI
         {
             imgwidth = int.Parse(textBox1.Text);
             imgheight = int.Parse(textBox2.Text);
-            ImageProcess imageProcess = new ImageProcess(img);
+            imageProcess = new ImageProcess(img);
             pictureBox2.Image = imageProcess.GetConvertedImage();
             textBox3.Text = imageProcess.GetDebugString();
+            structure = new GameStructure(imageProcess.GetColorArray());
         }
 
         private void pictureBox2_Click(object sender, MouseEventArgs e)
         {
             int xCoordinate = e.X;
             int yCoordinate = e.Y;
-            label3.Text = xCoordinate.ToString() + " " + yCoordinate.ToString();
+            int x = xCoordinate / 50;
+            int y = yCoordinate / 50;
+            label3.Text = x.ToString() + " " + y.ToString();
+            structure.Click(x, y, selectedcolor);
+            imageProcess.Update(structure.Updateimage());
+            pictureBox2.Image = imageProcess.GetConvertedImage();
+        }
+
+        private void pictureBox3_Click(object sender, MouseEventArgs e)
+        {
+            int xCoordinate = e.X;
+            int yCoordinate = e.Y;
+            Bitmap b = ((Bitmap)pictureBox3.Image);
+            int x = xCoordinate * b.Width / pictureBox3.ClientSize.Width;
+            int y = yCoordinate * b.Height / pictureBox3.ClientSize.Height;
+            Color c = b.GetPixel(x, y);
+            label3.Text = c.ToString();
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(comboBox1.SelectedIndex == 0)
+            {
+                selectedcolor = Color.Red;
+            }
         }
     }
 }

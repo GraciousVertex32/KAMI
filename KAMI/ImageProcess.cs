@@ -50,6 +50,22 @@ namespace KAMI
         {
             return debug;
         }
+        public void Update(Color[,] c)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    for (int i = 0; i < 50; i++)
+                    {
+                        for (int j = 0; j < 50; j++)
+                        {
+                            convert.SetPixel(x * 50 + i, y * 50 + j, c[x, y]);
+                        }
+                    }
+                }
+            }
+        }
         private void processing()
         {
             for (int y = 0; y < Height; y++)

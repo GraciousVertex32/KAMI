@@ -12,8 +12,10 @@ namespace KAMI
         private static int width = 16;
         private static int height = 10;
         Grid[,] imggrid = new Grid[width, height];//to grid result
+        Color[,] returncolor = new Color[16, 10];
         public GameStructure(Color[,] InputColor)//set up the grid array imggrid[,]
         {
+            Array.Copy(InputColor, returncolor,InputColor.Length);
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -42,15 +44,20 @@ namespace KAMI
                 }
             }
         }
-        private void Click(int x, int y, Color c)
+        public void Click(int x, int y, Color c)
         {
             Operation1(GetGrid(x, y), c);
+        }
+        public Color[,] Updateimage()
+        {
+            return returncolor;
         }
         private void Operation1(Grid grid,Color newcolor)
         {
             foreach (Grid part in AllConnectedGrid(grid))
             {
                 part.Gridcolor = newcolor;
+                returncolor[part.X, part.Y] = newcolor;
             }
         }
         private IEnumerable<Grid> AllConnectedGrid(Grid origin)
@@ -60,28 +67,37 @@ namespace KAMI
             Grid temp;
             pq.Enqueue(origin);
             connected.Add(origin);
+            bool[,] visited = new bool[width, height];
             while (pq.Count != 0)
             {
-                temp = pq.Dequeue();
-                if (temp.CompareColor(temp.Left))
+                if (visited[pq.First<Grid>().X, pq.First<Grid>().Y] == false)
                 {
-                    connected.Add(temp.Left);
-                    pq.Enqueue(temp.Left);
+                    temp = pq.Dequeue();
+                    visited[temp.X, temp.Y] = true;
+                    if (temp.Left != null && temp.CompareColor(temp.Left))
+                    {
+                        connected.Add(temp.Left);
+                        pq.Enqueue(temp.Left);
+                    }
+                    if (temp.Right != null && temp.CompareColor(temp.Right))
+                    {
+                        connected.Add(temp.Right);
+                        pq.Enqueue(temp.Right);
+                    }
+                    if (temp.Up != null && temp.CompareColor(temp.Up))
+                    {
+                        connected.Add(temp.Up);
+                        pq.Enqueue(temp.Up);
+                    }
+                    if (temp.Down != null && temp.CompareColor(temp.Down))
+                    {
+                        connected.Add(temp.Down);
+                        pq.Enqueue(temp.Down);
+                    }
                 }
-                if (temp.CompareColor(temp.Right))
+                else
                 {
-                    connected.Add(temp.Right);
-                    pq.Enqueue(temp.Right);
-                }
-                if (temp.CompareColor(temp.Up))
-                {
-                    connected.Add(temp.Up);
-                    pq.Enqueue(temp.Up);
-                }
-                if (temp.CompareColor(temp.Down))
-                {
-                    connected.Add(temp.Down);
-                    pq.Enqueue(temp.Down);
+                    pq.Dequeue();
                 }
             }
             return connected;
