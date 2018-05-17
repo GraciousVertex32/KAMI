@@ -20,11 +20,13 @@ namespace KAMI
     {
         private Color selectedcolor; // color want to change to 
         Bitmap img; // loaded image
+        Bitmap img2; // loaded sample
+        List<Color> sample;
         public static int imgwidth;
         public static int imgheight;
         public int chance;
         private GameStructure structure;
-        private ImageProcess imageProcess;
+        private ImageProcess imageProcess1;
         public Form1()
         {
             InitializeComponent();
@@ -42,14 +44,17 @@ namespace KAMI
         }
         private void button1_Click_1(object sender, EventArgs e)//access imageprocess class and output result
         {
+            int NumberOfTypes;
+            NumberOfTypes = int.Parse(Tbfortypes.Text);
+            sample = SampleColor.GetSelectable(img2, NumberOfTypes);
             imgwidth = int.Parse(textBox1.Text);
             imgheight = int.Parse(textBox2.Text);
             chance = int.Parse(textBox4.Text);
             label3.Text = chance.ToString();
-            imageProcess = new ImageProcess(img);
-            pictureBox2.Image = imageProcess.GetConvertedImage();
-            textBox3.Text = imageProcess.GetDebugString();
-            structure = new GameStructure(imageProcess.GetColorArray(),chance);
+            imageProcess1 = new ImageProcess(img, sample);
+            pictureBox2.Image = imageProcess1.GetConvertedImage();
+            textBox3.Text = imageProcess1.GetDebugString();
+            structure = new GameStructure(imageProcess1.GetColorArray(),chance);
         }
 
         private void pictureBox2_Click(object sender, MouseEventArgs e) // player click this panel to play the game
@@ -60,8 +65,8 @@ namespace KAMI
             int y = yCoordinate / 50;
             structure.Click(x, y, selectedcolor);
             label3.Text = structure.GetStep().ToString();
-            imageProcess.Update(structure.Updateimage());
-            pictureBox2.Image = imageProcess.GetConvertedImage();
+            imageProcess1.Update(structure.Updateimage());
+            pictureBox2.Image = imageProcess1.GetConvertedImage();
             if(structure.End())
             {
                 MessageBox.Show("YOU WIN!");
@@ -76,42 +81,21 @@ namespace KAMI
             int x = xCoordinate * b.Width / pictureBox3.ClientSize.Width;
             int y = yCoordinate * b.Height / pictureBox3.ClientSize.Height;
             Color c = b.GetPixel(x, y);
-            label3.Text = c.ToString();
-
+            selectedcolor = Classify.Getclass(c, sample);
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) // select color to change
+        private void button2_Click(object sender, EventArgs e) // load sample file
         {
-            if(comboBox1.SelectedIndex == 0)
+            OpenFileDialog ofd2 = new OpenFileDialog();
+            ofd2.CheckFileExists = true;
+            ofd2.CheckPathExists = true;
+            if (ofd2.ShowDialog() == DialogResult.OK)
             {
-                selectedcolor = Color.Red;
+                img2 = new Bitmap(ofd2.FileName);
+                pictureBox3.Image = img2;
             }
-            if (comboBox1.SelectedIndex == 1)
-            {
-                selectedcolor = Color.Yellow;
-            }
-            if (comboBox1.SelectedIndex == 2)
-            {
-                selectedcolor = Color.Green;
-            }
-            if (comboBox1.SelectedIndex == 3)
-            {
-                selectedcolor = Color.Blue;
-            }
-            if (comboBox1.SelectedIndex == 4)
-            {
-                selectedcolor = Color.DarkBlue;
-            }
-            if (comboBox1.SelectedIndex == 5)
-            {
-                selectedcolor = Color.Violet;
-            }
-            if (comboBox1.SelectedIndex == 6)
-            {
-                selectedcolor = Color.Black;
-            }
-
         }
+
     }
 }
 

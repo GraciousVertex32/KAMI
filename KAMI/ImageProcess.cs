@@ -9,24 +9,26 @@ namespace KAMI
 {
     class ImageProcess
     {
-        Bitmap img;//loaded image
-        Bitmap convert = new Bitmap(800, 500);//converted image
-        Color[,] Color = new Color[16, 10];//unclassifed color map for loaded image
-        string debug;
-        int Width;
-        int Height;
-        int pixelength;
-        int hpl; // half pixel length
-        public ImageProcess(Bitmap inputimage)
+        private Bitmap img;//loaded image
+        public Bitmap convert = new Bitmap(800, 500);//converted image
+        private Color[,] Color = new Color[16, 10];//unclassifed color map for loaded image
+        private List<Color> selectable;
+        private string debug;
+        private int Width;
+        private int Height;
+        private int pixelength;
+        private int hpl; // half pixel length
+        public ImageProcess(Bitmap inputimage, List<Color> selectable)
         {
-            img = inputimage;
-            Width = Form1.imgwidth;//16
-            Height = Form1.imgheight;//10
-            pixelength = img.Width / Width;
-            hpl = pixelength / 2;
+            this.selectable = selectable;
+            this.img = inputimage;
+            this.Width = Form1.imgwidth;//16
+            this.Height = Form1.imgheight;//10
+            this.pixelength = img.Width / Width;
+            this.hpl = pixelength / 2;
             if (img.Height > 200) { processing(); }
         }
-        public float GetAverageHue()
+        public float GetAverageHue() // for debug
         {
             int hue = 0;
             for (int y = 0; y < img.Height; y++)
@@ -72,7 +74,7 @@ namespace KAMI
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    Color[x, y] = Classify(Averagecolor(x * pixelength + hpl, y * pixelength + hpl));
+                    Color[x, y] = Classify.Getclass(Averagecolor(x * pixelength + hpl, y * pixelength + hpl),selectable);
                     for (int i = 0; i < 50; i++)
                     {
                         for (int j = 0; j < 50; j++)
@@ -80,12 +82,17 @@ namespace KAMI
                             convert.SetPixel(x * 50 + i, y * 50 + j, Color[x, y]);
                         }
                     }
+                    /*
                     debug += Classifystring(Color[x, y]);//change parameter
+                    */
                 }
+                /*
                 debug += "\r\n";
                 debug += "\r\n";
+                */
             }
         }
+        /*
         private Color Classify(Color c)//classify color tybe
         {
             float hue = c.GetHue();
@@ -134,6 +141,7 @@ namespace KAMI
             if (hue < 360 && sat > satthreshold) return "红 " + lgt + sat;
             return "黑 " + lgt + sat;
         }
+        */
         private Color Averagecolor(int x, int y)//get average color for a grid
         {
             int red = 0;

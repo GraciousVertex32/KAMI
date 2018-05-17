@@ -13,7 +13,7 @@ namespace KAMI
         private static int width = 16;
         private static int height = 10;
         Grid[,] imggrid = new Grid[width, height];//to grid result
-        Color[,] returncolor = new Color[16, 10];
+        Color[,] returncolor = new Color[width, height];
         public GameStructure(Color[,] InputColor,int chance)//set up the grid array imggrid[,]
         {
             this.trials = chance;
