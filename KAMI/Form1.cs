@@ -79,6 +79,31 @@ namespace KAMI
             {
                 selectedcolor = Color.Red;
             }
+            if (comboBox1.SelectedIndex == 1)
+            {
+                selectedcolor = Color.Yellow;
+            }
+            if (comboBox1.SelectedIndex == 2)
+            {
+                selectedcolor = Color.Green;
+            }
+            if (comboBox1.SelectedIndex == 3)
+            {
+                selectedcolor = Color.Blue;
+            }
+            if (comboBox1.SelectedIndex == 4)
+            {
+                selectedcolor = Color.DarkBlue;
+            }
+            if (comboBox1.SelectedIndex == 5)
+            {
+                selectedcolor = Color.Violet;
+            }
+            if (comboBox1.SelectedIndex == 6)
+            {
+                selectedcolor = Color.Black;
+            }
+
         }
     }
 }

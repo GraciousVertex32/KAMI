@@ -26,11 +26,11 @@ namespace KAMI
             }
             foreach (Grid grid in imggrid) // set neighbour for each grid
             {
-                if(grid.X - 1 > 0)
+                if(grid.X > 0)
                 {
                     grid.Left = GetGrid(grid.X - 1, grid.Y);
                 }
-                if (grid.Y - 1 > 0)
+                if (grid.Y > 0)
                 {
                     grid.Up = GetGrid(grid.X, grid.Y - 1);
                 }
